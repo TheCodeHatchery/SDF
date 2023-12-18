@@ -110,6 +110,7 @@ CSV read_csv_from_cstr(const char* cstr)
 				csv.append_row(current_row);
 
 				current_row.clear();
+				state = NOTHING;
 			}
 			else if (*iter == column_delimiter) // new record finished
 			{
