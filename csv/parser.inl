@@ -39,7 +39,7 @@ CSV read_csv(Document& document)
 
 	auto add_entry = [&current_row, &entry]()
 	{
-		while (impl::is_space(entry.back()))
+		while (!entry.empty() && impl::is_space(entry.back()))
 		{
 			entry.pop_back();
 		}
@@ -92,7 +92,49 @@ CSV read_csv(Document& document)
 		}
 		else if (state == impl::ENTRY_PARENTHESIS)
 		{
-			throw "Nope!"; // TODO
+			if (c == '"') // new record finished
+			{
+				if (document.eof())
+				{
+					// edge case. TODO: add test to cover this
+					current_row.append_entry(entry);
+					entry.clear();
+					break;
+				}
+
+				char peek = document.get();
+				if (peek == '"')
+				{
+					// two quotes is how a quote is escaped!
+					entry.push_back(c);
+				}
+				else
+				{
+					// add entry completely unedited (unlike what add_entry()) does
+					current_row.append_entry(entry);
+					entry.clear();
+
+					while (!document.eof())
+					{
+						// eat until next seperator.
+						if (peek == column_delimiter)
+						{
+							break;
+						}
+						if (!impl::is_space(peek))
+						{
+							throw "whatever";
+						}
+						peek = document.get();
+					}
+
+					state = impl::NOTHING;
+				}
+			}
+			else
+			{
+				entry.push_back(c);
+			}
 		}
 	}
 
