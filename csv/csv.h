@@ -30,37 +30,29 @@ namespace sdf
 * JSON (whatever we call it, maybe Tree or Object) read_csv_from_stream_as_json();
 */
 
-class TableRow
+class CSVRow
 {
 public:
-	TableRow();
+	CSVRow();
 
 	void clear();
 	void append_entry(std::string entry);
+
+	bool empty() const;
 
 	const std::string &get_entry(size_t idx) const;
 private:
 	std::vector<std::string> entries_;
 };
 
-// can be intentionally sliced from a CSV object
-class Table
-{
-public:
-	Table();
-
-	void append_row(TableRow row);
-	const TableRow& get_row(size_t idx) const;
-private:
-	bool has_header_row_; // if true, first value of rows_ is the name of every column
-	std::vector<TableRow> rows_;
-};
-
-class CSV : public Table
+class CSV
 {
 public:
 	// construct an empty csv
 	CSV();
+
+	void append_row(CSVRow row);
+	const CSVRow& get_row(size_t idx) const;
 
 	//void append_row(TableRow row);
 	//void append_comment(std::string comment);
@@ -70,11 +62,19 @@ public:
 	// TODO: insert_row, insert_comment
 
 private:
+	bool has_header_row_; // if true, first value of rows_ is the name of every column
+	std::vector<CSVRow> rows_;
+
 	// map of comment lines and where they are.
 	// TODO: does this really work as far as the CSV being edited?
 	std::map<int, std::string> comments_;
 };
 
+template<typename Document>
+CSV read_csv(Document& document);
+
 CSV read_csv_from_cstr(const char *cstr);
 
 }
+
+#include "parser.inl"
