@@ -6,11 +6,11 @@ namespace sdf
 // The interface is as follows
 // char get()
 // bool eof()
-class StringDocumentReader
+class StringDocument
 {
 public:
 	// assumes document is a null terminated string
-	StringDocumentReader(const char *document);
+	StringDocument(const char *document);
 	char get();
 	bool eof();
 

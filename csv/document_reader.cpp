@@ -3,18 +3,18 @@
 namespace sdf
 {
 
-StringDocumentReader::StringDocumentReader(const char* document) : document_(document)
+StringDocument::StringDocument(const char* document) : document_(document)
 {
 }
 
-char StringDocumentReader::get()
+char StringDocument::get()
 {
 	char c = *document_;
 	document_++;
 	return c;
 }
 
-bool StringDocumentReader::eof()
+bool StringDocument::eof()
 {
 	return *document_ == '\0';
 }

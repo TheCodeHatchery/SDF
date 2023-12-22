@@ -8,6 +8,13 @@ inline bool is_space(char c)
 	return c <= 32; // TODO: more precise? Or is this fine?
 }
 
+enum PARSE_STATE
+{
+	NOTHING,
+	ENTRY,
+	ENTRY_PARENTHESIS,
+};
+
 }
 
 template<typename Document>
@@ -23,7 +30,7 @@ CSV read_csv(Document& document)
 
 	// TODO: handle double quotes correctly! "" = " somehow...
 
-	PARSE_STATE state = PARSE_STATE::NOTHING;
+	impl::PARSE_STATE state = impl::NOTHING;
 
 	CSV csv;
 
@@ -45,7 +52,7 @@ CSV read_csv(Document& document)
 	{
 		char c = (old_c == '\0' ? document.get() : old_c);
 		old_c = '\0';
-		if (state == NOTHING)
+		if (state == impl::NOTHING)
 		{
 			if (impl::is_space(c))
 			{
@@ -53,16 +60,16 @@ CSV read_csv(Document& document)
 			}
 			else if (c == '"')
 			{
-				state = PARSE_STATE::ENTRY_PARENTHESIS;
+				state = impl::ENTRY_PARENTHESIS;
 			}
 			else
 			{
-				state = PARSE_STATE::ENTRY;
+				state = impl::ENTRY;
 				// no increment so we get the first char properly
 				old_c = c;
 			}
 		}
-		else if (state == ENTRY)
+		else if (state == impl::ENTRY)
 		{
 			if (c == row_delimiter)  // newline
 			{
@@ -71,19 +78,19 @@ CSV read_csv(Document& document)
 				csv.append_row(current_row);
 
 				current_row.clear();
-				state = NOTHING;
+				state = impl::NOTHING;
 			}
 			else if (c == column_delimiter) // new record finished
 			{
 				add_entry();
-				state = NOTHING;
+				state = impl::NOTHING;
 			}
 			else
 			{
 				entry.push_back(c);
 			}
 		}
-		else if (state == ENTRY_PARENTHESIS)
+		else if (state == impl::ENTRY_PARENTHESIS)
 		{
 			throw "Nope!"; // TODO
 		}

@@ -41,21 +41,10 @@ const CSVRow& CSV::get_row(size_t idx) const
 }
 
 
-
-
-
-enum PARSE_STATE
-{
-	NOTHING,
-	ENTRY,
-	ENTRY_PARENTHESIS,
-};
-
-
-
 CSV read_csv_from_cstr(const char* cstr)
 {
-	return read_csv<StringDocumentReader>(StringDocumentReader(cstr));
+	StringDocument reader(cstr);
+	return read_csv<StringDocument>(reader);
 }
 
 }
